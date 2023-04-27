@@ -16,7 +16,7 @@ let config = {
 const returnClarifaiRequestOptions = (imageUrl) => {
   const raw = JSON.stringify({
     user_app_id: {
-      user_id: "",
+      user_id: "sohostory",
       app_id: "face-detection-app",
     },
     inputs: [
