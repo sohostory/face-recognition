@@ -13,51 +13,25 @@ let config = {
   num: 150,
 };
 
-const returnClarifaiRequestOptions = (imageUrl) => {
-  const raw = JSON.stringify({
-    user_app_id: {
-      user_id: "sohostory",
-      app_id: "face-detection-app",
-    },
-    inputs: [
-      {
-        data: {
-          image: {
-            url: imageUrl,
-          },
-        },
-      },
-    ],
-  });
-
-  const requestOptions = {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      Authorization: "Key " + "",
-    },
-    body: raw,
-  };
-  return requestOptions;
+const initialState = {
+  input: "",
+  imageUrl: "",
+  box: {},
+  route: "signin",
+  isSignedIn: false,
+  user: {
+    id: "",
+    name: "",
+    email: "",
+    entries: 0,
+    joined: "",
+  },
 };
 
 class App extends Component {
   constructor() {
     super();
-    this.state = {
-      input: "",
-      imageUrl: "",
-      box: {},
-      route: "signin",
-      isSignedIn: false,
-      user: {
-        id: "",
-        name: "",
-        email: "",
-        entries: 0,
-        joined: "",
-      },
-    };
+    this.state = initialState;
   }
 
   loadUser = (data) => {
@@ -72,6 +46,7 @@ class App extends Component {
     });
   };
   calculateFaceLocation = (data) => {
+    console.log(data);
     const clarifaiFace =
       data.outputs[0].data.regions[0].region_info.bounding_box;
     const image = document.getElementById("inputimage");
@@ -96,11 +71,13 @@ class App extends Component {
   onButtonSubmit = () => {
     this.setState({ imageUrl: this.state.input });
     console.log("click");
-
-    fetch(
-      `https://api.clarifai.com/v2/models/face-detection/versions/6dc7e46bc9124c5c8824be4822abe105/outputs`,
-      returnClarifaiRequestOptions(this.state.input)
-    )
+    fetch("http://localhost:3000/imageurl", {
+      method: "post",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        input: this.state.input,
+      }),
+    })
       .then((response) => response.json()) //.json()
       .then((response) => {
         if (response) {
@@ -114,7 +91,8 @@ class App extends Component {
             .then((response) => response.json())
             .then((count) => {
               this.setState(Object.assign(this.state.user, { entries: count }));
-            });
+            })
+            .catch(console.log);
 
           this.displayFaceBox(this.calculateFaceLocation(response));
           //console.log(result.outputs[0].data.regions[0].region_info.bounding_box)
@@ -125,7 +103,7 @@ class App extends Component {
 
   onRouteChange = (route) => {
     if (route === "signout") {
-      this.setState({ isSignedIn: false });
+      this.setState(initialState);
     } else if (route === "home") {
       this.setState({ isSignedIn: true });
     }
