@@ -23,7 +23,6 @@ class Register extends React.Component {
   };
 
   onSubmitSignIn = () => {
-    console.log(REACT_APP_DB_URL);
     fetch(`${process.env.REACT_APP_DB_URL}/register`, {
       method: "post",
       headers: { "Content-Type": "application/json" },
