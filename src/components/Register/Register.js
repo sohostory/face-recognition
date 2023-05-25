@@ -25,6 +25,7 @@ class Register extends React.Component {
   onSubmitSignIn = () => {
     fetch(`${process.env.REACT_APP_DB_URL}/register`, {
       method: "post",
+      mode: "cors",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: this.state.email,
